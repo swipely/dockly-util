@@ -1,0 +1,11 @@
+{
+  "built_on": "master",
+  "duration": 16.311,
+  "full_display_name": "gem.dsl #3 - master",
+  "id": "2013-11-01_10-46-08",
+  "number": 3,
+  "result": "FAILURE",
+  "status_message": "?",
+  "time": "2013-11-01 10:46:08 -0400",
+  "url": "job/gem.dsl/3/"
+}

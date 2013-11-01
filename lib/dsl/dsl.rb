@@ -1,4 +1,4 @@
-module DSL
+module DSL::DSL
   def self.included(base)
     base.instance_eval do
       extend ClassMethods
@@ -23,7 +23,7 @@ module DSL
     private :dsl_attribute
 
     def dsl_class_attribute(name, klass)
-      unless klass.ancestors.include?(DSL)
+      unless klass.ancestors.include?(DSL::DSL)
         raise "#{self.class}.dsl_class_attribute requires a class that includes DSL"
       end
       define_method(name) do |sym = nil, &block|
@@ -86,7 +86,7 @@ module DSL
   end
   def initialize(options = {}, &block)
     self.class.default_values.merge(options).each do |k, v|
-      v = v.dup rescue v unless v.class.ancestors.include?(DSL)
+      v = v.dup rescue v unless v.class.ancestors.include?(DSL::DSL)
       public_send(k, v)
     end
     instance_eval(&block) unless block.nil?

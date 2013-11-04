@@ -2,7 +2,7 @@ $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 
 require 'rspec'
-require 'dsl'
+require 'slugger_core'
 
 RSpec.configure do |config|
   config.mock_with :rspec

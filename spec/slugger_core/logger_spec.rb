@@ -1,8 +1,8 @@
 require 'spec_helper'
 
-describe DSL::Logger do
-  before(:all) { DSL::Logger.enable! }
-  after(:all) { DSL::Logger.disable! unless ENV['ENABLE_LOGGER'] == 'true' }
+describe SluggerCore::Logger do
+  before(:all) { SluggerCore::Logger.enable! }
+  after(:all) { SluggerCore::Logger.disable! unless ENV['ENABLE_LOGGER'] == 'true' }
 
   describe '#initialize' do
     its(:prefix) { should be_empty }
@@ -25,8 +25,8 @@ describe DSL::Logger do
     end
 
     context 'when the logger is disabled' do
-      before(:all) { DSL::Logger.disable! }
-      after(:all) { DSL::Logger.enable! }
+      before(:all) { SluggerCore::Logger.disable! }
+      after(:all) { SluggerCore::Logger.enable! }
 
       it 'does nothing' do
         subject.output.should_not_receive(:puts)
@@ -35,7 +35,7 @@ describe DSL::Logger do
     end
   end
 
-  DSL::Logger::LEVELS.each do |level|
+  SluggerCore::Logger::LEVELS.each do |level|
     describe "##{level}" do
       let(:message) { "message for #{level}" }
 
@@ -163,25 +163,25 @@ describe DSL::Logger do
   describe 'the meta class' do
     subject { described_class }
 
-    (DSL::Logger::LEVELS + [:default, :logger, :log, :with_prefix]).each do |method|
+    (SluggerCore::Logger::LEVELS + [:default, :logger, :log, :with_prefix]).each do |method|
       it { should respond_to method }
     end
   end
 
-  describe DSL::Logger::Mixin do
-    let(:test_class) { Class.new { include DSL::Logger::Mixin } }
+  describe SluggerCore::Logger::Mixin do
+    let(:test_class) { Class.new { include SluggerCore::Logger::Mixin } }
 
     subject { test_class.new }
 
     describe '#logger' do
-      its(:logger) { should be_a DSL::Logger }
+      its(:logger) { should be_a SluggerCore::Logger }
 
       it 'has the class name as the prefix' do
         subject.logger.prefix.should == test_class.name
       end
     end
 
-    (DSL::Logger::LEVELS + [:log, :with_prefix]).each do |method|
+    (SluggerCore::Logger::LEVELS + [:log, :with_prefix]).each do |method|
       describe "##{method}" do
         it "sends ##{method} to #logger" do
           subject.logger.should_receive(method)

@@ -1,10 +1,10 @@
-class DSL::Logger
+class SluggerCore::Logger
   attr_accessor :prefix, :print_method, :output
   alias_method :print_method?, :print_method
 
   LEVELS = [:debug, :info, :warn, :error, :fatal, :unknown].freeze
 
-  def initialize(prefix = "", output = DSL::Logger.output, print_method = DSL::Logger.print_method)
+  def initialize(prefix = "", output = SluggerCore::Logger.output, print_method = SluggerCore::Logger.print_method)
     @prefix = prefix
     @print_method = print_method
     @output = output
@@ -46,14 +46,14 @@ class DSL::Logger
   end
 
   module Mixin
-    extend DSL::Delegate
+    extend SluggerCore::Delegate
 
     def self.included(base)
       base.extend(ClassMethods)
     end
 
     def logger
-      @logger ||= DSL::Logger.new(self.class.logger_prefix)
+      @logger ||= SluggerCore::Logger.new(self.class.logger_prefix)
     end
 
     delegate(*(LEVELS + [:log, :with_prefix]), :to => :logger)

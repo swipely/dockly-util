@@ -1,4 +1,6 @@
-module Dockly::Util
+module Dockly
+  module Util
+  end
 end
 
 require 'dockly/util/delegate'

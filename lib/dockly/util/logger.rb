@@ -1,10 +1,10 @@
-class SluggerCore::Logger
+class Dockly::Util::Logger
   attr_accessor :prefix, :print_method, :output
   alias_method :print_method?, :print_method
 
   LEVELS = [:debug, :info, :warn, :error, :fatal, :unknown].freeze
 
-  def initialize(prefix = "", output = SluggerCore::Logger.output, print_method = SluggerCore::Logger.print_method)
+  def initialize(prefix = "", output = Dockly::Util::Logger.output, print_method = Dockly::Util::Logger.print_method)
     @prefix = prefix
     @print_method = print_method
     @output = output
@@ -46,14 +46,14 @@ class SluggerCore::Logger
   end
 
   module Mixin
-    extend SluggerCore::Delegate
+    extend Dockly::Util::Delegate
 
     def self.included(base)
       base.extend(ClassMethods)
     end
 
     def logger
-      @logger ||= SluggerCore::Logger.new(self.class.logger_prefix)
+      @logger ||= Dockly::Util::Logger.new(self.class.logger_prefix)
     end
 
     delegate(*(LEVELS + [:log, :with_prefix]), :to => :logger)

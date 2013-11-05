@@ -3,7 +3,7 @@
 $LOAD_PATH.unshift( File.join( File.dirname(__FILE__), 'lib' ) )
 
 require 'rake'
-require 'slugger_core'
+require 'dockly/util'
 require 'rspec/core/rake_task'
 require 'cane/rake_task'
 

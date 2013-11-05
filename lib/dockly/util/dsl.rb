@@ -1,4 +1,4 @@
-module SluggerCore::DSL
+module Dockly::Util::DSL
   def self.included(base)
     base.instance_eval do
       extend ClassMethods
@@ -23,7 +23,7 @@ module SluggerCore::DSL
     private :dsl_attribute
 
     def dsl_class_attribute(name, klass)
-      unless klass.ancestors.include?(SluggerCore::DSL)
+      unless klass.ancestors.include?(Dockly::Util::DSL)
         raise "#{self.class}.dsl_class_attribute requires a class that includes DSL"
       end
       define_method(name) do |sym = nil, &block|
@@ -51,10 +51,18 @@ module SluggerCore::DSL
       @instances ||= {}
     end
 
+    def demodulize(path)
+      if i = path.rindex('::')
+        path[(i+2)..-1]
+      else
+        path
+      end
+    end
+
     def generate_unique_name
       name = nil
       (0..(1.0 / 0.0)).each do |n|
-        name = :"#{self.name.demodulize}_#{n}"
+        name = :"#{demodulize(self.name)}_#{n}"
         break unless instances.has_key?(name)
       end
       name
@@ -86,7 +94,7 @@ module SluggerCore::DSL
   end
   def initialize(options = {}, &block)
     self.class.default_values.merge(options).each do |k, v|
-      v = v.dup rescue v unless v.class.ancestors.include?(SluggerCore::DSL)
+      v = v.dup rescue v unless v.class.ancestors.include?(Dockly::Util::DSL)
       public_send(k, v)
     end
     instance_eval(&block) unless block.nil?

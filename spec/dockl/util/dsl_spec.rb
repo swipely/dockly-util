@@ -1,9 +1,9 @@
 require 'spec_helper'
 
-describe SluggerCore::DSL do
+describe Dockly::Util::DSL do
   let(:included_class) do
     Class.new do
-      include SluggerCore::DSL
+      include Dockly::Util::DSL
 
       dsl_attribute :ocean
     end
@@ -12,7 +12,7 @@ describe SluggerCore::DSL do
   let(:test_class) do
     klass = included_class
     Class.new do
-      include SluggerCore::DSL
+      include Dockly::Util::DSL
 
       dsl_attribute :chips
       dsl_class_attribute :meta, klass
@@ -51,7 +51,7 @@ describe SluggerCore::DSL do
       it 'raises an error' do
         expect do
           Class.new do
-            include SluggerCore::DSL
+            include Dockly::Util::DSL
 
             dsl_class_attribute :test, Array
           end

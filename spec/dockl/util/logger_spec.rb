@@ -1,8 +1,8 @@
 require 'spec_helper'
 
-describe SluggerCore::Logger do
-  before(:all) { SluggerCore::Logger.enable! }
-  after(:all) { SluggerCore::Logger.disable! unless ENV['ENABLE_LOGGER'] == 'true' }
+describe Dockly::Util::Logger do
+  before(:all) { Dockly::Util::Logger.enable! }
+  after(:all) { Dockly::Util::Logger.disable! unless ENV['ENABLE_LOGGER'] == 'true' }
 
   describe '#initialize' do
     its(:prefix) { should be_empty }
@@ -25,8 +25,8 @@ describe SluggerCore::Logger do
     end
 
     context 'when the logger is disabled' do
-      before(:all) { SluggerCore::Logger.disable! }
-      after(:all) { SluggerCore::Logger.enable! }
+      before(:all) { Dockly::Util::Logger.disable! }
+      after(:all) { Dockly::Util::Logger.enable! }
 
       it 'does nothing' do
         subject.output.should_not_receive(:puts)
@@ -35,7 +35,7 @@ describe SluggerCore::Logger do
     end
   end
 
-  SluggerCore::Logger::LEVELS.each do |level|
+  Dockly::Util::Logger::LEVELS.each do |level|
     describe "##{level}" do
       let(:message) { "message for #{level}" }
 
@@ -163,25 +163,25 @@ describe SluggerCore::Logger do
   describe 'the meta class' do
     subject { described_class }
 
-    (SluggerCore::Logger::LEVELS + [:default, :logger, :log, :with_prefix]).each do |method|
+    (Dockly::Util::Logger::LEVELS + [:default, :logger, :log, :with_prefix]).each do |method|
       it { should respond_to method }
     end
   end
 
-  describe SluggerCore::Logger::Mixin do
-    let(:test_class) { Class.new { include SluggerCore::Logger::Mixin } }
+  describe Dockly::Util::Logger::Mixin do
+    let(:test_class) { Class.new { include Dockly::Util::Logger::Mixin } }
 
     subject { test_class.new }
 
     describe '#logger' do
-      its(:logger) { should be_a SluggerCore::Logger }
+      its(:logger) { should be_a Dockly::Util::Logger }
 
       it 'has the class name as the prefix' do
         subject.logger.prefix.should == test_class.name
       end
     end
 
-    (SluggerCore::Logger::LEVELS + [:log, :with_prefix]).each do |method|
+    (Dockly::Util::Logger::LEVELS + [:log, :with_prefix]).each do |method|
       describe "##{method}" do
         it "sends ##{method} to #logger" do
           subject.logger.should_receive(method)

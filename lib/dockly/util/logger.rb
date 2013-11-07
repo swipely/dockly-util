@@ -34,7 +34,7 @@ class Dockly::Util::Logger
 
   def get_last_method
     if print_method?
-      file_and_method = caller.reject { |trace| trace =~ /deployz\/logger\.rb|block \(\d+ levels\)/ }.first
+      file_and_method = caller.reject { |trace| trace =~ /dockly\/util\/logger\.rb|block \(\d+ levels\)/ }.first
       file_and_method.match(/:in `(.+)'$/)[1]
     end
   end

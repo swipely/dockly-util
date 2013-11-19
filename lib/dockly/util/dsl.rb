@@ -22,21 +22,52 @@ module Dockly::Util::DSL
     end
     private :dsl_attribute
 
-    def dsl_class_attribute(name, klass)
+    def dsl_class_attribute(name, klass, options={})
       unless klass.ancestors.include?(Dockly::Util::DSL)
-        raise "#{self.class}.dsl_class_attribute requires a class that includes DSL"
+        raise "#{self}.dsl_class_attribute requires a class that includes DSL"
       end
-      define_method(name) do |sym = nil, &block|
-        new_value = case
-                    when !block.nil? && !sym.nil? then klass.new!(:name => sym, &block)
-                    when block.nil?               then klass.instances[sym]
-                    when sym.nil?                 then klass.new!(:name => :"#{self.name}_#{klass}", &block)
-                    end
-        instance_variable_set(:"@#{name}", new_value) unless new_value.nil?
-        instance_variable_get(:"@#{name}")
-      end
+      type = options.delete(:type) || Object
+      generated_related_name = :"#{self.underscore(self.demodulize(self.to_s))}"
+      related_name = options.delete(:related_name) || generated_related_name
+      define_forward_relation(name, related_name, self, klass, type)
+      define_reverse_relation(related_name, name, klass, self)
     end
     private :dsl_class_attribute
+
+    def define_forward_relation(name, related_name, current_class, klass, type)
+      current_class.instance_eval do
+        define_method(name) do |sym = nil, &block|
+          new_value = case
+                      when !block.nil? && !sym.nil? then klass.new!(:name => sym, &block)
+                      when block.nil?               then klass.instances[sym]
+                      when sym.nil?                 then klass.new!(:name => :"#{self.name}_#{klass}", &block)
+                      end
+          unless new_value.nil?
+            if type.ancestors.include? Array
+              val = instance_variable_get(:"@#{name}") || []
+              instance_variable_set(:"@#{name}", val + [new_value])
+            else
+              instance_variable_set(:"@#{name}", new_value)
+            end
+            new_value.instance_variable_set(
+              :"@#{related_name}",
+              self
+            )
+          end
+          instance_variable_get(:"@#{name}")
+        end
+      end
+    end
+    private :define_forward_relation
+
+    def define_reverse_relation(name, related_name, current_class, klass)
+      current_class.instance_eval do
+        define_method(name) do
+          instance_variable_get(:"@#{name}")
+        end
+      end
+    end
+    private :define_reverse_relation
 
     def default_value(name, val = nil)
       default_values[name] = block_given? ? yield : val
@@ -44,7 +75,11 @@ module Dockly::Util::DSL
     private :default_value
 
     def default_values
-      @default_values ||= {}
+      @default_values ||= if self.superclass.respond_to?(:default_values)
+        self.superclass.default_values
+      else
+        {}
+      end
     end
 
     def instances
@@ -57,6 +92,17 @@ module Dockly::Util::DSL
       else
         path
       end
+    end
+
+    def underscore(camel_cased_word)
+      word = camel_cased_word.to_s.dup
+      word.gsub!('::', '/')
+      word.gsub!(/(?:([A-Za-z\d])|^)(#{/(?=a)b/})(?=\b|[^a-z])/) { "#{$1}#{$1 && '_'}#{$2.downcase}" }
+      word.gsub!(/([A-Z\d]+)([A-Z][a-z])/,'\1_\2')
+      word.gsub!(/([a-z\d])([A-Z])/,'\1_\2')
+      word.tr!("-", "_")
+      word.downcase!
+      word
     end
 
     def generate_unique_name

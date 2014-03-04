@@ -46,7 +46,7 @@ describe Dockly::Util::Logger do
     end
   end
 
-  describe '#format message' do
+  describe '#format_message' do
     before do
       subject.stub(:prefix).and_return(prefix)
       subject.stub(:get_last_method).and_return(method)
@@ -61,7 +61,8 @@ describe Dockly::Util::Logger do
       let(:message) { 'here i am' }
 
       it 'returns each of them with a space in the middle' do
-        subject.format_message(level, message).should == "#{formatted_level} #{prefix} #{method} #{message}"
+        subject.format_message(level, message).should ==
+          "#{formatted_level} #{Thread.current.object_id} #{prefix} #{method} #{message}"
       end
     end
 
@@ -73,7 +74,8 @@ describe Dockly::Util::Logger do
       let(:message) { 'there you are' }
 
       it 'does not insert an extra space' do
-        subject.format_message(level, message).should == "#{formatted_level} #{prefix} #{message}"
+        subject.format_message(level, message).should ==
+          "#{formatted_level} #{Thread.current.object_id} #{prefix} #{message}"
       end
     end
   end

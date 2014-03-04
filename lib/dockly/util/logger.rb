@@ -21,6 +21,7 @@ class Dockly::Util::Logger
   def format_message(level, message)
     [
       format_level(level),
+      Thread.current.object_id.to_s,
       Thread.current[:rake_task].to_s,
       prefix,
       get_last_method,

@@ -6,7 +6,7 @@ describe Dockly::Util::Logger do
 
   describe '#initialize' do
     its(:prefix) { should be_empty }
-    its(:print_method?) { should be_true }
+    its(:print_method?) { should be_truthy }
     its(:output) { should == STDOUT }
   end
 

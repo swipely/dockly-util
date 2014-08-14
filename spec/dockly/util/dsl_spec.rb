@@ -49,6 +49,7 @@ describe Dockly::Util::DSL do
               .to 'bbq'
         end
       end
+
     end
   end
 
@@ -196,6 +197,29 @@ describe Dockly::Util::DSL do
       it 'adds the pair to the default_values hash' do
         test_class.send(:default_value, :chips, 'Cool Ranch')
         test_class.default_values[:chips].should == 'Cool Ranch'
+      end
+    end
+
+    context 'when extending' do
+      class Parent
+        include Dockly::Util::DSL
+
+        dsl_attribute :test
+        default_value :test, 'not so fancy'
+      end
+
+      class Child < Parent
+        dsl_attribute :fancy_test
+        default_value :fancy_test, 'fancy'
+      end
+
+      it "should have all default values in child" do
+        expect( Child.default_values).to match_array(
+          [[:fancy_test, 'fancy'], [:test, 'not so fancy']] )
+      end
+
+      it "should not include child default values in parent" do
+        expect( Parent.default_values).to_not include(:fancy_test)
       end
     end
   end

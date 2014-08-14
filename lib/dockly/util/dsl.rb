@@ -76,7 +76,7 @@ module Dockly::Util::DSL
 
     def default_values
       @default_values ||= if self.superclass.respond_to?(:default_values)
-        self.superclass.default_values
+        Marshal.load(Marshal.dump(self.superclass.default_values))
       else
         {}
       end

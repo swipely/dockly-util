@@ -47,10 +47,12 @@ describe Dockly::Util::Logger do
   end
 
   describe '#format_message' do
+    let(:time) { Time.new(2015, 01, 16, 17, 05, 00) }
     before do
       subject.stub(:prefix).and_return(prefix)
       subject.stub(:get_last_method).and_return(method)
       subject.stub(:format_level).with(level).and_return(formatted_level)
+      Time.stub(:now).and_return(time)
     end
 
     context 'when all of the fields are present' do
@@ -62,7 +64,7 @@ describe Dockly::Util::Logger do
 
       it 'returns each of them with a space in the middle' do
         subject.format_message(level, message).should ==
-          "#{formatted_level} #{Thread.current.object_id} #{prefix} #{method} #{message}"
+          "#{formatted_level} #{time.iso8601} #{Process.pid} #{Thread.current.object_id} #{prefix} #{method} #{message}"
       end
     end
 
@@ -75,7 +77,7 @@ describe Dockly::Util::Logger do
 
       it 'does not insert an extra space' do
         subject.format_message(level, message).should ==
-          "#{formatted_level} #{Thread.current.object_id} #{prefix} #{message}"
+          "#{formatted_level} #{time.iso8601} #{Process.pid} #{Thread.current.object_id} #{prefix} #{message}"
       end
     end
   end

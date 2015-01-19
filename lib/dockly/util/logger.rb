@@ -21,6 +21,8 @@ class Dockly::Util::Logger
   def format_message(level, message)
     [
       format_level(level),
+      Time.now.iso8601,
+      Process.pid.to_s,
       Thread.current.object_id.to_s,
       Thread.current[:rake_task].to_s,
       prefix,

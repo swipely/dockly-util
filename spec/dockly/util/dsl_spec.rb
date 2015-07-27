@@ -50,6 +50,14 @@ describe Dockly::Util::DSL do
         end
       end
 
+      context 'with a block' do
+        it 'sets the corresponding instance variable to the block' do
+          expect { test_instance.chips { 'test' } }
+              .to change { test_instance.instance_variable_get(:@chips) }
+          expect(test_instance.chips.call).to eq('test')
+        end
+      end
+
     end
   end
 

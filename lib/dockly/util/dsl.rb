@@ -14,9 +14,13 @@ module Dockly::Util::DSL
 
     def dsl_attribute(*names)
       names.each do |name|
-        define_method(name) do |val = nil|
-          val.nil? ? instance_variable_get(:"@#{name}")
-                   : instance_variable_set(:"@#{name}", val)
+        define_method(name) do |val = nil, &block|
+          val_or_block = val.nil? ? block : val
+          if val_or_block.nil?
+            instance_variable_get(:"@#{name}")
+          else
+            instance_variable_set(:"@#{name}", val_or_block)
+          end
         end
       end
     end
